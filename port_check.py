@@ -45,7 +45,7 @@ def check_socket(host, port, verbose, mode):
             print("Port: " + str(port) + " is open")
         else:
             if verbose or mode == 'single':
-                print("Port: " + str(port) + " is not open")
+                print("Port: " + str(port) + " is closed")
 
 
 def port_scan(host, port_start, port_end, verbose, mode):
@@ -94,7 +94,7 @@ def main(parser):
         if valid_port_number(port):
             print('Single port mode')
             print('Checking ' + str(port) +
-                  ' on ' + destination + ' ' + remote_server)
+                  ' on ' + remote_server)
             check_socket(remote_server, port, verbose, 'single')
         else:
             parser.error('Port must be in the range 1-65535')
@@ -104,7 +104,7 @@ def main(parser):
         if valid_port_number(port_start) and valid_port_number(port_end):
             print('Port range mode')
             print('Checking ' + str(port_start) + ' to ' + str(port_end) +
-                  ' on ' + destination + ' ' + remote_server)
+                  ' on ' + remote_server)
             port_scan(remote_server, port_start, port_end, verbose, 'range')
         else:
             parser.error('Ports must be in the range 1-65535')
