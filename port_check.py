@@ -2,15 +2,15 @@
 Port Check Utility.
 
 Parses arguments passed on the commandline
-Scans a single port or a range of ports
+Scans a list of ports
 Socket is used to make a connection and determine if the port is open
 
-Possible future improvements:
-Add the ability to scan a list of ports
-Multithreaded scans
-Optional delay timing between socket connections to prevent flooding
-Would writing a Class be better?
+Possible improvements:
+Class-ify
+Ability to scan a list of ports
 Add tests
+Optional delay timing between socket connections to prevent flooding
+Multithreaded scans
 """
 import socket
 from contextlib import closing
@@ -28,56 +28,9 @@ parser.add_argument('-v', '--verbose',
 # parser.add_argument('args', nargs=argparse.REMAINDER)
 parser.add_argument('-p', '--port',
                     help='Port(s)',
-                    required=True,
-                    type=int,
+                    required=False,
+                    type=str,
                     nargs='*')
-
-
-def check_socket(host, port, verbose, mode):
-    """
-    Accept host and port.
-
-    Try to connect to that host/port
-    Print result of that attempt
-    """
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-        if sock.connect_ex((host, port)) == 0:
-            print("Port: " + str(port) + " is open")
-        else:
-            if verbose or mode == 'single':
-                print("Port: " + str(port) + " is closed")
-
-
-def port_scan(host, port_start, port_end, verbose, mode):
-    """
-    Accept host and port range.
-
-    Loop through port range running the check_socket for each
-    """
-    for i in range(port_start, port_end):
-        check_socket(host, i, verbose, mode)
-        # sleep(3.0 / 1000.0)
-
-
-def valid_port_number(port):
-    """Check port if is 1-65535."""
-    if port > 0 and port <= 65535:
-        return True
-    else:
-        return False
-
-
-def get_port_scan_mode(port_list):
-    """Parse the args.port list to determine scan mode."""
-    if len(port_list) == 1:
-        return 'single'
-    elif len(port_list) == 2:
-        if port_list[0] < port_list[1]:
-            return 'range'
-        else:
-            return 'invalid'
-    elif len(port_list) > 2:
-        return 'invalid'
 
 
 def main(parser):
