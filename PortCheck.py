@@ -45,4 +45,5 @@ class PortCheck:
         rangeSet = self.port_string.split(",")
         for singleRange in rangeSet:
             if '-' in singleRange
-                range(self.singleRange)
+                range(singleRange)
+        return
