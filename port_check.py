@@ -24,9 +24,9 @@ parser.add_argument('-d', '--destination',
                     help='Destination IP',
                     required=True)
 parser.add_argument('-t', '--timeout',
-                    help='Timeout in seconds',
+                    help='Timeout in miliseconds',
                     required=False,
-                    default=1)
+                    default=1000)
 parser.add_argument('-v', '--verbose',
                     help='Verbose',
                     required=False,
@@ -47,7 +47,10 @@ def check_socket(host, port, verbose, mode, timeout):
     Print result of that attempt
     """
     connection = socket.socket(AF_INET, SOCK_STREAM)
-    connection.settimeout(float(timeout))
+    sec_timeout = float(timeout) / 1000.0
+    if verbose:
+        print('Timeout sec: ', sec_timeout)
+    connection.settimeout(sec_timeout)
 
     try:
         status = connection.connect_ex((host, port))
