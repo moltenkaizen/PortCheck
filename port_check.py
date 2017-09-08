@@ -51,12 +51,12 @@ def check_socket(host, port, verbose, mode, timeout):
     try:
         status = connection.connect_ex((host, port))
         if status == 0:
-            print("Port: " + str(port) + " is open")
+            print("Port: " + str(port) + " is " + Fore.GREEN + "open")
+            print(Style.RESET_ALL)
         else:
             if verbose or mode == 'single':
                 print("Port: " + str(port) + " is " + Fore.RED + "closed")
                 print(Style.RESET_ALL)
-
 
     except (socket.timeout, socket.gaierror) as error:
         print(error)
