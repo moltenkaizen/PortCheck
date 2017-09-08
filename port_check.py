@@ -13,19 +13,25 @@ Would writing a Class be better?
 Add tests
 """
 import socket
+import ipaddress
 from colorama import Fore, Back, Style
 from socket import AF_INET, SOCK_STREAM
 from contextlib import closing
 # from time import sleep
 import argparse
 
+def valid_ipaddress(address):
+    return ipaddress.ip_address(address)
+
 parser = argparse.ArgumentParser(description='Port Check')
 parser.add_argument('-d', '--destination',
                     help='Destination IP',
-                    required=True)
+                    required=True,
+                    type=valid_ipaddress)
 parser.add_argument('-t', '--timeout',
                     help='Timeout in miliseconds',
                     required=False,
+                    type=int,
                     default=1000)
 parser.add_argument('-v', '--verbose',
                     help='Verbose',
@@ -105,7 +111,7 @@ def main(parser):
     # Resolve host to ip. This seems to be ok if you pass an ip or a hostname
     args = parser.parse_args()
     verbose = args.verbose
-    destination = args.destination
+    destination = args.destination.exploded
     remote_server = socket.gethostbyname(destination)
     timeout = args.timeout
 
