@@ -16,18 +16,16 @@ import socket
 import ipaddress
 from colorama import Fore, Back, Style
 from socket import AF_INET, SOCK_STREAM
-from contextlib import closing
-# from time import sleep
 import argparse
 
-def valid_ipaddress(address):
+def IP_Address(address):
     return ipaddress.ip_address(address)
 
 parser = argparse.ArgumentParser(description='Port Check')
 parser.add_argument('-d', '--destination',
                     help='Destination IP',
                     required=True,
-                    type=valid_ipaddress)
+                    type=IP_Address)
 parser.add_argument('-t', '--timeout',
                     help='Timeout in miliseconds',
                     required=False,
