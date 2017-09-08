@@ -25,7 +25,8 @@ parser.add_argument('-d', '--destination',
                     required=True)
 parser.add_argument('-t', '--timeout',
                     help='Timeout in seconds',
-                    required=False)
+                    required=False,
+                    default=1)
 parser.add_argument('-v', '--verbose',
                     help='Verbose',
                     required=False,
