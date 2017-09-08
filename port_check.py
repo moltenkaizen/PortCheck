@@ -14,6 +14,7 @@ Add tests
 """
 import socket
 from colorama import Fore, Back, Style
+from socket import AF_INET, SOCK_STREAM
 from contextlib import closing
 # from time import sleep
 import argparse
@@ -22,6 +23,9 @@ parser = argparse.ArgumentParser(description='Port Check')
 parser.add_argument('-d', '--destination',
                     help='Destination IP',
                     required=True)
+parser.add_argument('-t', '--timeout',
+                    help='Timeout in seconds',
+                    required=False)
 parser.add_argument('-v', '--verbose',
                     help='Verbose',
                     required=False,
@@ -34,32 +38,40 @@ parser.add_argument('-p', '--port',
                     nargs='*')
 
 
-def check_socket(host, port, verbose, mode):
+def check_socket(host, port, verbose, mode, timeout):
     """
     Accept host and port.
 
     Try to connect to that host/port
     Print result of that attempt
     """
-    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-        if sock.connect_ex((host, port)) == 0:
-            print("Port: " + str(port) + " is " + Fore.GREEN + "open")
-            print(Style.RESET_ALL)
+    connection = socket.socket(AF_INET, SOCK_STREAM)
+    connection.settimeout(float(timeout))
+
+    try:
+        status = connection.connect_ex((host, port))
+        if status == 0:
+            print("Port: " + str(port) + " is open")
         else:
             if verbose or mode == 'single':
                 print("Port: " + str(port) + " is " + Fore.RED + "closed")
                 print(Style.RESET_ALL)
 
 
+    except (socket.timeout, socket.gaierror) as error:
+        print(error)
+    finally:
+        connection.close()
 
-def port_scan(host, port_start, port_end, verbose, mode):
+
+def port_scan(host, port_start, port_end, verbose, mode, timeout):
     """
     Accept host and port range.
 
     Loop through port range running the check_socket for each
     """
     for i in range(port_start, port_end):
-        check_socket(host, i, verbose, mode)
+        check_socket(host, i, verbose, mode, timeout)
         # sleep(3.0 / 1000.0)
 
 
@@ -91,6 +103,7 @@ def main(parser):
     verbose = args.verbose
     destination = args.destination
     remote_server = socket.gethostbyname(destination)
+    timeout = args.timeout
 
     # Check len(items) in args.port list to use single or port range mode
     if get_port_scan_mode(args.port) == 'single':
@@ -99,7 +112,7 @@ def main(parser):
             print('Single port mode')
             print('Checking ' + str(port) +
                   ' on ' + remote_server)
-            check_socket(remote_server, port, verbose, 'single')
+            check_socket(remote_server, port, verbose, 'single', timeout)
         else:
             parser.error('Port must be in the range 1-65535')
     elif get_port_scan_mode(args.port) == 'range':
@@ -109,7 +122,7 @@ def main(parser):
             print('Port range mode')
             print('Checking ' + str(port_start) + ' to ' + str(port_end) +
                   ' on ' + remote_server)
-            port_scan(remote_server, port_start, port_end, verbose, 'range')
+            port_scan(remote_server, port_start, port_end, verbose, 'range', timeout)
         else:
             parser.error('Ports must be in the range 1-65535')
     else:
