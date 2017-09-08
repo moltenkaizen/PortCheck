@@ -13,6 +13,7 @@ Would writing a Class be better?
 Add tests
 """
 import socket
+from colorama import Fore, Back, Style
 from contextlib import closing
 # from time import sleep
 import argparse
@@ -42,10 +43,13 @@ def check_socket(host, port, verbose, mode):
     """
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
         if sock.connect_ex((host, port)) == 0:
-            print("Port: " + str(port) + " is open")
+            print("Port: " + str(port) + " is " + Fore.GREEN + "open")
+            print(Style.RESET_ALL)
         else:
             if verbose or mode == 'single':
-                print("Port: " + str(port) + " is closed")
+                print("Port: " + str(port) + " is " + Fore.RED + "closed")
+                print(Style.RESET_ALL)
+
 
 
 def port_scan(host, port_start, port_end, verbose, mode):
